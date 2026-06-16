@@ -86,21 +86,31 @@
     let STATE = JSON.parse(JSON.stringify(INITIAL_STATE));
 
     function saveState() {
-      localStorage.setItem('chubi_save', JSON.stringify(STATE));
+      try { localStorage.setItem('chubi_save', JSON.stringify(STATE)); } catch (_) {}
     }
 
     function loadState() {
-      const saved = localStorage.getItem('chubi_save');
-      if (saved) {
-        STATE = JSON.parse(saved);
-        return true;
+      try {
+        const saved = localStorage.getItem('chubi_save');
+        if (saved) {
+          // Merge over INITIAL_STATE so new fields added in future updates get defaults
+          const parsed = JSON.parse(saved);
+          STATE = {
+            ...JSON.parse(JSON.stringify(INITIAL_STATE)),
+            ...parsed,
+            stats: { ...INITIAL_STATE.stats, ...parsed.stats }
+          };
+          return true;
+        }
+      } catch (_) {
+        // private-browsing SecurityError, QuotaExceededError, or corrupt save — start fresh
       }
       return false;
     }
 
     function resetState() {
       STATE = JSON.parse(JSON.stringify(INITIAL_STATE));
-      localStorage.removeItem('chubi_save');
+      try { localStorage.removeItem('chubi_save'); } catch (_) {}
     }
 
     // ── Title logic ──
@@ -112,14 +122,19 @@
       { stat: 'sugar',   threshold: 60,  title: 'SWEET LORD 🍰' },
     ];
 
+    // checkTitle re-evaluates on every call: highest-priority threshold that is met wins.
+    // Since stats only increase, a title earned early can be superseded by a higher-priority
+    // one later — this is intentional (array order defines priority).
+    // Always calls saveState() so callers don't need to remember to persist the result.
     function checkTitle() {
       for (const t of TITLE_THRESHOLDS) {
         if (STATE.stats[t.stat] >= t.threshold) {
           STATE.earnedTitle = t.title;
+          saveState();
           return t.title;
         }
       }
-      return STATE.earnedTitle;
+      return null;  // no threshold met yet
     }
 
     // ── Apply choice reward ──
@@ -129,8 +144,7 @@
           STATE.stats[stat] += value;
         }
       }
-      checkTitle();
-      saveState();
+      checkTitle(); // checkTitle saves internally
     }
 
     // ── Navigation ──
