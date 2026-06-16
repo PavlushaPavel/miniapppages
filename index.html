@@ -75,6 +75,71 @@
       tg.setBackgroundColor('#1e0c02');
     }
 
+    // ── State ──
+    const INITIAL_STATE = {
+      currentMission: 0,   // 0 = prologue, 1–15 = missions, 16 = finale
+      stats: { beer: 0, overpay: 0, family: 0, sugar: 0, gamer: 0 },
+      earnedTitle: null,
+      completed: false
+    };
+
+    let STATE = JSON.parse(JSON.stringify(INITIAL_STATE));
+
+    function saveState() {
+      localStorage.setItem('chubi_save', JSON.stringify(STATE));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem('chubi_save');
+      if (saved) {
+        STATE = JSON.parse(saved);
+        return true;
+      }
+      return false;
+    }
+
+    function resetState() {
+      STATE = JSON.parse(JSON.stringify(INITIAL_STATE));
+      localStorage.removeItem('chubi_save');
+    }
+
+    // ── Title logic ──
+    const TITLE_THRESHOLDS = [
+      { stat: 'overpay', threshold: 150, title: 'MASTER OF OVERPAY 💎' },
+      { stat: 'beer',    threshold: 200, title: 'EL PIVOZAVR LEGENDARIO 🍺' },
+      { stat: 'family',  threshold: 100, title: 'FAMILY BOSS ❤️' },
+      { stat: 'gamer',   threshold: 80,  title: 'GAMER SUPREME 🎮' },
+      { stat: 'sugar',   threshold: 60,  title: 'SWEET LORD 🍰' },
+    ];
+
+    function checkTitle() {
+      for (const t of TITLE_THRESHOLDS) {
+        if (STATE.stats[t.stat] >= t.threshold) {
+          STATE.earnedTitle = t.title;
+          return t.title;
+        }
+      }
+      return STATE.earnedTitle;
+    }
+
+    // ── Apply choice reward ──
+    function applyReward(reward) {
+      for (const [stat, value] of Object.entries(reward)) {
+        if (STATE.stats[stat] !== undefined) {
+          STATE.stats[stat] += value;
+        }
+      }
+      checkTitle();
+      saveState();
+    }
+
+    // ── Navigation ──
+    function goNext() {
+      STATE.currentMission += 1;
+      saveState();
+      render();
+    }
+
     // Boot
     window.addEventListener('DOMContentLoaded', () => {
       console.log('CHUBI GOLD EDITION — ready');
