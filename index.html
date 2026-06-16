@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MAXIMUM ADVENTURE: CHUBI GOLD EDITION</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Gabarito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── CSS Variables ── */
+    :root {
+      --bg-base:     oklch(12% 0.025 40);
+      --bg-surface:  oklch(18% 0.030 38);
+      --bg-elevated: oklch(22% 0.035 40);
+      --red-primary: oklch(52% 0.22 25);
+      --red-dim:     oklch(35% 0.15 25);
+      --gold:        oklch(78% 0.18 85);
+      --gold-dim:    oklch(55% 0.12 85);
+      --text-main:   oklch(94% 0.015 80);
+      --text-sub:    oklch(68% 0.018 60);
+      --font-pixel:    'Silkscreen', monospace;
+      --font-dialogue: 'Gabarito', sans-serif;
+      --text-xs:   0.625rem;
+      --text-sm:   0.75rem;
+      --text-base: 1rem;
+      --text-lg:   1.25rem;
+      --text-xl:   1.5rem;
+      --text-2xl:  2rem;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --space-8: 32px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-dialogue);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      max-width: 430px;
+      margin: 0 auto;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <p style="color:var(--text-main);padding:20px;font-family:var(--font-pixel);font-size:var(--text-sm);">LOADING...</p>
+  </div>
+  <script>
+    // Telegram Web App init
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.setHeaderColor('#1a0a00');
+      tg.setBackgroundColor('#1a0a00');
+    }
+
+    // Boot
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('CHUBI GOLD EDITION — ready');
+    });
+  </script>
+</body>
+</html>
