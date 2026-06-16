@@ -819,9 +819,18 @@
       saveState();
     }
 
-    // Boot
-    window.addEventListener('DOMContentLoaded', () => {
-      console.log('CHUBI GOLD EDITION — ready');
+    // ── Main Router ──
+    function render() {
+      var m = STATE.currentMission;
+      if (m === 0) { renderPrologue(); return; }
+      if (m >= 16) { renderFinale(); return; }
+      renderMission(m);
+    }
+
+    // ── Boot ──
+    window.addEventListener('DOMContentLoaded', function() {
+      loadState();
+      render();
     });
   </script>
 </body>
