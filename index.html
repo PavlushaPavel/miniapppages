@@ -589,6 +589,196 @@
       render();
     }
 
+    // ── Typewriter ──
+    function typewrite(element, text, onDone, speed) {
+      speed = speed || 28;
+      element.textContent = '';
+      var i = 0;
+      var cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      element.appendChild(cursor);
+      var interval = setInterval(function() {
+        element.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+        if (i >= text.length) {
+          clearInterval(interval);
+          if (onDone) onDone();
+        }
+      }, speed);
+      return interval;
+    }
+
+    // ── XP Pop ──
+    function showXpPop(text, x, y) {
+      var el = document.createElement('div');
+      el.className = 'xp-pop';
+      el.textContent = text;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      document.body.appendChild(el);
+      setTimeout(function() { el.remove(); }, 1300);
+    }
+
+    // ── Status Bar ──
+    function renderStatusBar(container) {
+      var el = document.createElement('div');
+      el.className = 'status-bar';
+      el.innerHTML =
+        '<span class="stat"><span class="mission-num">МИС ' + STATE.currentMission + '/15</span></span>' +
+        '<span class="stat">🍺<span class="stat-val">' + STATE.stats.beer + '</span></span>' +
+        '<span class="stat">💎<span class="stat-val">' + STATE.stats.overpay + '</span></span>' +
+        '<span class="stat">❤️<span class="stat-val">' + STATE.stats.family + '</span></span>';
+      container.appendChild(el);
+    }
+
+    // ── Prologue ──
+    function renderPrologue() {
+      var app = document.getElementById('app');
+      app.innerHTML = '';
+      app.className = 'fade-in';
+      var screen = document.createElement('div');
+      screen.className = 'fullscreen-screen';
+      screen.innerHTML =
+        '<div class="screen-title">MAXIMUM<br>ADVENTURE</div>' +
+        '<div style="font-family:var(--font-pixel);font-size:var(--text-sm);color:var(--gold);">CHUBI GOLD EDITION</div>' +
+        '<div class="screen-subtitle">Загрузка персонажа...</div>' +
+        '<div class="progress-track"><div class="progress-fill" id="prog" style="width:0%"></div></div>' +
+        '<div id="prog-label" style="font-family:var(--font-pixel);font-size:var(--text-xs);color:var(--text-sub);">ИНИЦИАЛИЗАЦИЯ...</div>';
+      app.appendChild(screen);
+      var labels = [
+        [10, 'ЗАГРУЗКА СТАТОВ...'],
+        [30, 'ПИВНАЯ ИСТОРИЯ...'],
+        [55, 'ИСПАНСКИЙ ДУХ...'],
+        [75, 'ЗОЛОТОЙ СТАТУС...'],
+        [90, 'КОМАНДА ГОТОВА...'],
+        [100, 'ПЕРСОНАЖ ЗАГРУЖЕН!']
+      ];
+      var prog = document.getElementById('prog');
+      var label = document.getElementById('prog-label');
+      var step = 0;
+      var tick = setInterval(function() {
+        if (step >= labels.length) {
+          clearInterval(tick);
+          setTimeout(function() {
+            STATE.currentMission = 1;
+            saveState();
+            render();
+          }, 600);
+          return;
+        }
+        prog.style.width = labels[step][0] + '%';
+        label.textContent = labels[step][1];
+        step++;
+      }, 500);
+    }
+
+    // ── Handle Choice ──
+    function handleChoice(choice, event) {
+      var statIcons = { beer: '🍺', overpay: '💎', family: '❤️', sugar: '🍰', gamer: '🎮' };
+      var rect = event.currentTarget.getBoundingClientRect();
+      var i = 0;
+      for (var stat in choice.reward) {
+        if (choice.reward[stat] > 0) {
+          (function(t, idx) {
+            setTimeout(function() {
+              showXpPop('+' + choice.reward[t] + ' ' + (statIcons[t] || t), rect.left + 20, rect.top - 10);
+            }, idx * 150);
+          })(stat, i);
+          i++;
+        }
+      }
+      var total = Object.values(choice.reward).reduce(function(a, b) { return a + b; }, 0);
+      if (total >= 50) {
+        var appEl = document.getElementById('app');
+        appEl.classList.add('shake');
+        setTimeout(function() { appEl.classList.remove('shake'); }, 500);
+      }
+      applyReward(choice.reward);
+      setTimeout(function() {
+        var next = STATE.currentMission + 1;
+        if (next === 6 || next === 11) {
+          STATE.currentMission = next;
+          saveState();
+          renderMidpoint();
+        } else if (next > 15) {
+          STATE.currentMission = 16;
+          saveState();
+          renderFinale();
+        } else {
+          STATE.currentMission = next;
+          saveState();
+          render();
+        }
+      }, 600);
+    }
+
+    // ── Mission Screen ──
+    function renderMission(missionIndex) {
+      var mission = MISSIONS[missionIndex - 1];
+      if (!mission) { renderFinale(); return; }
+      var app = document.getElementById('app');
+      app.innerHTML = '';
+      app.className = 'fade-in';
+      renderStatusBar(app);
+      var portraitArea = document.createElement('div');
+      portraitArea.className = 'portrait-area';
+      var img = document.createElement('img');
+      img.src = mission.portrait;
+      img.alt = mission.npc;
+      img.onerror = function() {
+        var emojis = { 'portraits/chubi.png': '🧙', 'portraits/sveta.png': '👩', 'portraits/lusik.png': '🐕', 'portraits/nika.png': '👩‍👧', 'portraits/max.png': '🦸', 'portraits/filka.png': '🐱' };
+        portraitArea.innerHTML = '<div class="portrait-placeholder">' + (emojis[mission.portrait] || '🎭') + '</div>';
+      };
+      portraitArea.appendChild(img);
+      app.appendChild(portraitArea);
+      var dialogueBox = document.createElement('div');
+      dialogueBox.className = 'dialogue-box';
+      dialogueBox.innerHTML = '<div class="dialogue-npc">' + mission.npc + '</div><div class="dialogue-text" id="dial-text"></div>';
+      app.appendChild(dialogueBox);
+      var choicesEl = document.createElement('div');
+      choicesEl.className = 'choices';
+      choicesEl.style.opacity = '0';
+      choicesEl.style.pointerEvents = 'none';
+      var letters = ['A', 'B', 'C', 'D'];
+      mission.choices.forEach(function(choice, idx) {
+        var btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = '<span class="choice-letter">[' + letters[idx] + ']</span>' + choice.text;
+        btn.addEventListener('click', function(e) { handleChoice(choice, e); });
+        choicesEl.appendChild(btn);
+      });
+      app.appendChild(choicesEl);
+      var dialText = document.getElementById('dial-text');
+      typewrite(dialText, mission.text, function() {
+        choicesEl.style.opacity = '1';
+        choicesEl.style.pointerEvents = 'auto';
+        choicesEl.style.transition = 'opacity 0.3s ease-out';
+      });
+    }
+
+    // ── Midpoint Stats ──
+    function renderMidpoint() {
+      var stats = STATE.stats;
+      var milestone = STATE.currentMission - 1;
+      var app = document.getElementById('app');
+      app.innerHTML = '';
+      app.className = 'fade-in';
+      var screen = document.createElement('div');
+      screen.className = 'fullscreen-screen';
+      screen.innerHTML =
+        '<div class="screen-title">ЧЕКПОИНТ<br>' + milestone + '/15</div>' +
+        '<div class="screen-subtitle">Статистика Пивозавра обновлена</div>' +
+        '<div class="stats-grid">' +
+          '<div class="stat-card"><span class="stat-icon">🍺</span><div class="stat-name">BEER XP</div><div class="stat-number">' + stats.beer + '</div></div>' +
+          '<div class="stat-card"><span class="stat-icon">💎</span><div class="stat-name">OVERPAY</div><div class="stat-number">' + stats.overpay + '</div></div>' +
+          '<div class="stat-card"><span class="stat-icon">❤️</span><div class="stat-name">FAMILY</div><div class="stat-number">' + stats.family + '</div></div>' +
+          '<div class="stat-card"><span class="stat-icon">🎮</span><div class="stat-name">GAMER XP</div><div class="stat-number">' + stats.gamer + '</div></div>' +
+        '</div>' +
+        '<button class="big-btn" id="continue-btn">ПРОДОЛЖИТЬ ▶</button>';
+      app.appendChild(screen);
+      document.getElementById('continue-btn').addEventListener('click', function() { render(); });
+    }
+
     // Boot
     window.addEventListener('DOMContentLoaded', () => {
       console.log('CHUBI GOLD EDITION — ready');
