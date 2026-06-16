@@ -122,6 +122,190 @@
       { stat: 'sugar',   threshold: 60,  title: 'SWEET LORD 🍰' },
     ];
 
+    // ── Mission Data ──
+    const MISSIONS = [
+      {
+        id: 1,
+        title: "МИССИЯ 1: ИМЯ ЛЕГЕНДЫ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Слушай, перед тем как начать... Как тебя правильно называть? Просто хочу внести в летопись.",
+        choices: [
+          { text: "Максим. Просто Максим.", reward: { beer: 10 } },
+          { text: "Пивозавр. Всегда Пивозавр.", reward: { beer: 40 } },
+          { text: "Золотой мальчик, конечно.", reward: { overpay: 50 } }
+        ]
+      },
+      {
+        id: 2,
+        title: "МИССИЯ 2: ИСПАНСКИЙ ДУХ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "¡JAJAJA! Слушай, а правда что ты в Испании говорил «JAJAJA» вместо «хахаха»? Местные понимали?",
+        choices: [
+          { text: "¡Claro que sí! Меня принимали за своего.", reward: { beer: 30, overpay: 10 } },
+          { text: "Пробовал, но акцент выдавал.", reward: { beer: 20 } },
+          { text: "Я молчал. Пиво говорит само за себя.", reward: { beer: 50 } }
+        ]
+      },
+      {
+        id: 3,
+        title: "МИССИЯ 3: ПИВНАЯ ИСТОРИЯ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Легенда гласит — 120 сортов пива. Это правда или преувеличение для красивого числа?",
+        choices: [
+          { text: "Факт. Я считал. Лично.", reward: { beer: 60 } },
+          { text: "Ну может 80. Но звучит хуже.", reward: { beer: 25 } },
+          { text: "Какая разница — все были вкусные.", reward: { beer: 40, sugar: 10 } }
+        ]
+      },
+      {
+        id: 4,
+        title: "МИССИЯ 4: СВЕТА",
+        npc: "СВЕТА",
+        portrait: "portraits/sveta.png",
+        text: "Макс. Я знаю куда тебя ведут. И я согласна. Но сначала ответь честно — кто в нашем доме главный?",
+        choices: [
+          { text: "Я. Я же помог выбрать твою машину.", reward: { family: 20, gamer: 10 } },
+          { text: "Ты, конечно. Люсик и Филька тоже за тебя.", reward: { family: 60 } },
+          { text: "Люсик главный. Мы оба это знаем.", reward: { family: 40, sugar: 10 } }
+        ]
+      },
+      {
+        id: 5,
+        title: "МИССИЯ 5: ЛЮСИК ПРОВЕРЯЕТ",
+        npc: "ЛЮСИК 🐕",
+        portrait: "portraits/lusik.png",
+        text: "...",
+        choices: [
+          { text: "(Люсик смотрит молча. Ты чувствуешь вину.) Я всё объясню.", reward: { family: 40 } },
+          { text: "Хороший пёс. Всё хорошо. Я скоро вернусь.", reward: { family: 30, beer: 10 } },
+          { text: "ТЫ УМЕЕШЬ ЧИТАТЬ?!", reward: { gamer: 20, beer: 20 } }
+        ]
+      },
+      {
+        id: 6,
+        title: "МИССИЯ 6: СЛАДКИЙ УРОВЕНЬ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Слышал, ты серьёзно относишься к десертам. Торт — это обязательная программа или бонус?",
+        choices: [
+          { text: "Обязательная. Без торта — не праздник.", reward: { sugar: 50 } },
+          { text: "Бонус. Но всегда беру.", reward: { sugar: 35 } },
+          { text: "Торт — это просто хлеб с кремом.", reward: { sugar: 10, beer: 10 } }
+        ]
+      },
+      {
+        id: 7,
+        title: "МИССИЯ 7: МАШИНЫ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Ты помогал Свете выбирать машину. Как это выглядело на самом деле?",
+        choices: [
+          { text: "Я провёл полный анализ рынка. Профессионально.", reward: { gamer: 40, family: 20 } },
+          { text: "Сказал 'бери эту' — и оказался прав.", reward: { gamer: 30, overpay: 10 } },
+          { text: "Она уже выбрала. Я просто одобрил.", reward: { family: 40 } }
+        ]
+      },
+      {
+        id: 8,
+        title: "МИССИЯ 8: МЕМ-ИМЕНА",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Финальный вопрос по идентичности: Чуби, Макс или Пивозавр — какое имя самое настоящее?",
+        choices: [
+          { text: "Чуби. Это душа.", reward: { beer: 30, sugar: 20 } },
+          { text: "Макс. Это документы.", reward: { family: 20 } },
+          { text: "Пивозавр. Это судьба.", reward: { beer: 50, overpay: 10 } }
+        ]
+      },
+      {
+        id: 9,
+        title: "МИССИЯ 9: ИГРОВОЙ МИР",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Если бы твоя жизнь была игрой — какой жанр?",
+        choices: [
+          { text: "RPG. Прокачка и боссы.", reward: { gamer: 40 } },
+          { text: "Симулятор жизни. Реализм.", reward: { family: 30 } },
+          { text: "Файтинг. Всегда в движении.", reward: { gamer: 30, beer: 10 } }
+        ]
+      },
+      {
+        id: 10,
+        title: "МИССИЯ 10: КОМАНДА ДРУЗЕЙ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Твои друзья — рейд-команда. Какая твоя роль в группе?",
+        choices: [
+          { text: "Танк. Принимаю удар первым.", reward: { beer: 30, family: 20 } },
+          { text: "Хилер. Слежу за всеми.", reward: { family: 40 } },
+          { text: "ДД. Максимальный урон по бюджету.", reward: { overpay: 40, beer: 10 } }
+        ]
+      },
+      {
+        id: 11,
+        title: "МИССИЯ 11: АБУ-ДАБИ / ТУРЦИЯ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Абу-Даби или Турция — где Overpay Index достиг исторического максимума?",
+        choices: [
+          { text: "Абу-Даби. Там всё стоит как самолёт.", reward: { overpay: 70 } },
+          { text: "Турция. Мы 'экономили' очень дорого.", reward: { overpay: 50, beer: 10 } },
+          { text: "Одинаково. Я не считаю в отпуске.", reward: { overpay: 60, family: 10 } }
+        ]
+      },
+      {
+        id: 12,
+        title: "МИССИЯ 12: АРМЕНИЯ",
+        npc: "НИКА",
+        portrait: "portraits/nika.png",
+        text: "Свадьба в Армении. Что запомнилось больше всего?",
+        choices: [
+          { text: "Еда. Это было откровением.", reward: { sugar: 30, beer: 20 } },
+          { text: "Атмосфера. Такого не забудешь.", reward: { family: 40 } },
+          { text: "Сколько всего выпили. Рекорд.", reward: { beer: 50 } }
+        ]
+      },
+      {
+        id: 13,
+        title: "МИССИЯ 13: ФИНАЛЬНЫЙ ТЕСТ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Последний вопрос перед финалом: мальчишник — это...",
+        choices: [
+          { text: "Ритуал перехода. Серьёзное дело.", reward: { beer: 20, family: 20 } },
+          { text: "Повод собраться. Всё остальное неважно.", reward: { beer: 40 } },
+          { text: "Финальный босс перед свадьбой.", reward: { beer: 30, gamer: 30 } }
+        ]
+      },
+      {
+        id: 14,
+        title: "МИССИЯ 14: ПРИНЯТИЕ КВЕСТА",
+        npc: "СВЕТА",
+        portrait: "portraits/sveta.png",
+        text: "Макс. Я знала об этом с самого начала. Иди. Люсик и Филька побудут со мной. Ты принимаешь квест?",
+        choices: [
+          { text: "Принимаю. Ты лучшая.", reward: { beer: 20, family: 40 } },
+          { text: "А Люсик не обидится?", reward: { family: 30, beer: 20 } },
+          { text: "¡SIEMPRE! Целую всех троих!", reward: { beer: 30, family: 30 } }
+        ]
+      },
+      {
+        id: 15,
+        title: "МИССИЯ 15: ФИНАЛ",
+        npc: "ЧУБИ",
+        portrait: "portraits/chubi.png",
+        text: "Ты прошёл все испытания, Пивозавр. Координаты мальчишника разблокированы. Готов?",
+        choices: [
+          { text: "¡ГОТОВ! ПОКАЗЫВАЙ!", reward: { beer: 10 } },
+          { text: "Всегда готов.", reward: { beer: 10 } }
+        ],
+        isLast: true
+      }
+    ];
+
     // checkTitle re-evaluates on every call: highest-priority threshold that is met wins.
     // Since stats only increase, a title earned early can be superseded by a higher-priority
     // one later — this is intentional (array order defines priority).
