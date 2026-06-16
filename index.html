@@ -779,6 +779,46 @@
       document.getElementById('continue-btn').addEventListener('click', function() { render(); });
     }
 
+    // ── Finale ──
+    // ⚠️ ЗАПОЛНИ РЕАЛЬНЫЕ ДАННЫЕ перед отправкой Максиму:
+    var BACHELOR_DATA = {
+      date:    '11 ИЮЛЯ 2026',
+      time:    '[ВСТАВЬ ВРЕМЯ]',
+      place:   '[ВСТАВЬ НАЗВАНИЕ МЕСТА]',
+      address: '[ВСТАВЬ АДРЕС]',
+      program: ['🏎️ Дрифт', '🏄 Вейкборд', '🧖 Баня', '🃏 Покер']
+    };
+
+    function renderFinale() {
+      var app = document.getElementById('app');
+      app.innerHTML = '';
+      app.className = 'fade-in';
+      var title = STATE.earnedTitle || 'GOLDEN BOY 💎';
+      var statsArr = Object.entries(STATE.stats).sort(function(a, b) { return b[1] - a[1]; });
+      var topStat = statsArr[0];
+      var statIcons = { beer: '🍺', overpay: '💎', family: '❤️', sugar: '🍰', gamer: '🎮' };
+      var screen = document.createElement('div');
+      screen.className = 'fullscreen-screen';
+      screen.style.gap = 'var(--space-4)';
+      screen.style.overflowY = 'auto';
+      screen.innerHTML =
+        '<div class="screen-title" style="font-size:var(--text-lg);">¡КВЕСТ ПРОЙДЕН!</div>' +
+        '<div style="font-family:var(--font-pixel);font-size:var(--text-xs);color:var(--gold);letter-spacing:0.1em;">' + title + '</div>' +
+        '<div class="screen-subtitle" style="font-size:var(--text-sm);">Твой главный стат: ' + (statIcons[topStat[0]] || '') + ' ' + topStat[1] + ' очков</div>' +
+        '<div class="coords-block"><div class="coords-label">📅 ДАТА</div><div class="coords-value">' + BACHELOR_DATA.date + '</div></div>' +
+        '<div class="coords-block"><div class="coords-label">⏰ ВРЕМЯ</div><div class="coords-value">' + BACHELOR_DATA.time + '</div></div>' +
+        '<div class="coords-block"><div class="coords-label">📍 МЕСТО</div><div class="coords-value">' + BACHELOR_DATA.place + '<br><span style="font-size:var(--text-sm);color:var(--text-sub)">' + BACHELOR_DATA.address + '</span></div></div>' +
+        '<div class="coords-block"><div class="coords-label">⚔️ ПРОГРАММА</div><div class="coords-value">' + BACHELOR_DATA.program.join('<br>') + '</div></div>' +
+        '<div class="coords-block" style="border-color:var(--gold-dim);">' +
+          '<div class="coords-label" style="color:var(--text-sub);">💌 ОТ СВЕТЫ</div>' +
+          '<div class="coords-value" style="font-size:var(--text-sm);font-weight:400;line-height:1.6;">Люсик и Филька под присмотром.<br>Иди и не думай о нас.<br>Люблю тебя, Пивозавр. ❤️</div>' +
+        '</div>' +
+        '<div class="screen-subtitle" style="font-size:var(--text-sm);color:var(--gold);">¡Tu equipo te espera, Pivozavr! 🍺</div>';
+      app.appendChild(screen);
+      STATE.completed = true;
+      saveState();
+    }
+
     // Boot
     window.addEventListener('DOMContentLoaded', () => {
       console.log('CHUBI GOLD EDITION — ready');
