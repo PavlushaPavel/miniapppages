@@ -328,7 +328,7 @@
 
     // ── State ──
     const INITIAL_STATE = {
-      currentMission: 0,   // 0 = prologue, 1-N = missions, N+1 = finale
+      currentMission: 0,   // 0 = prologue, 1-N = missions, N+1 = title reveal, N+2 = finale
       stats: { beer: 0, overpay: 0, family: 0, sugar: 0, gamer: 0 },
       earnedTitle: null,
       completed: false
@@ -366,11 +366,11 @@
 
     // ── Title logic ──
     const TITLE_THRESHOLDS = [
-      { stat: 'overpay', threshold: 150, title: 'MASTER OF OVERPAY 💎' },
-      { stat: 'beer',    threshold: 200, title: 'EL PIVOZAVR LEGENDARIO 🍺' },
-      { stat: 'family',  threshold: 100, title: 'FAMILY BOSS ❤️' },
-      { stat: 'gamer',   threshold: 80,  title: 'GAMER SUPREME 🎮' },
-      { stat: 'sugar',   threshold: 60,  title: 'SWEET LORD 🍰' },
+      { stat: 'overpay', threshold: 150, title: 'ГРАНДМАСТЕР ОВЕРПРАЙСА 💎' },
+      { stat: 'beer',    threshold: 200, title: 'ПИВОЗАВР ЛЕГЕНДАРИО 🍺' },
+      { stat: 'family',  threshold: 100, title: 'ДОМАШНИЙ БОСС НА ПОВОДКЕ ❤️' },
+      { stat: 'gamer',   threshold: 80,  title: 'СТИМ-ПАЛАДИН НА ПОЛЧАСИКА 🎮' },
+      { stat: 'sugar',   threshold: 60,  title: 'СЛАДКИЙ ЛОРД ПОСЛЕ УЖИНА 🍰' },
     ];
 
     // ── Mission Data ──
@@ -500,7 +500,35 @@
     ];
 
     const MISSION_TOTAL = MISSIONS.length;
-    const FINALE_MISSION = MISSION_TOTAL + 1;
+    const TITLE_REVEAL_MISSION = MISSION_TOTAL + 1;
+    const FINALE_MISSION = MISSION_TOTAL + 2;
+
+    const TITLE_FLAVOR = {
+      'ГРАНДМАСТЕР ОВЕРПРАЙСА 💎': {
+        verdict: 'Комиссия постановила: Максим умеет переплачивать так уверенно, будто это кешбэк для души.',
+        bonus: 'Особая способность: найти место подороже и назвать это атмосферой.'
+      },
+      'ПИВОЗАВР ЛЕГЕНДАРИО 🍺': {
+        verdict: 'Пенный совет признал: этот человек не пьет пиво, он проводит дегустационную работу.',
+        bonus: 'Особая способность: отличить IPA от APA по взгляду бармена.'
+      },
+      'ДОМАШНИЙ БОСС НА ПОВОДКЕ ❤️': {
+        verdict: 'Семейный совет решил: Макс главный, но только когда Света, Люсик и Филька разрешили.',
+        bonus: 'Особая способность: правильно кивнуть в момент выбора машины.'
+      },
+      'СТИМ-ПАЛАДИН НА ПОЛЧАСИКА 🎮': {
+        verdict: 'Игровая гильдия подтверждает: "еще одна катка" официально не считается временем.',
+        bonus: 'Особая способность: исчезнуть на 30 минут и вернуться через три часа.'
+      },
+      'СЛАДКИЙ ЛОРД ПОСЛЕ УЖИНА 🍰': {
+        verdict: 'Десертная коллегия признала: у Макса есть отдельный желудок под сладкое.',
+        bonus: 'Особая способность: "я просто попробую" и минус половина торта.'
+      },
+      'ЗОЛОТОЙ МАКСИМ 💎': {
+        verdict: 'Редкий сбалансированный билд: пиво, семья, игры, сладкое и переплата распределены почти подозрительно ровно.',
+        bonus: 'Особая способность: пройти тест и сделать вид, что так и было задумано.'
+      }
+    };
 
     // checkTitle re-evaluates on every call: highest-priority threshold that is met wins.
     // Since stats only increase, a title earned early can be superseded by a higher-priority
@@ -646,9 +674,9 @@
           saveState();
           renderMidpoint();
         } else if (next > MISSION_TOTAL) {
-          STATE.currentMission = FINALE_MISSION;
+          STATE.currentMission = TITLE_REVEAL_MISSION;
           saveState();
-          renderFinale();
+          renderTitleReveal();
         } else {
           STATE.currentMission = next;
           saveState();
@@ -734,11 +762,48 @@
       program: ['🏎️ Дрифт', '🏄 Вейкборд', '🧖 Баня', '🃏 Покер']
     };
 
+    function getTitleDetails(title) {
+      return TITLE_FLAVOR[title] || TITLE_FLAVOR['ЗОЛОТОЙ МАКСИМ 💎'];
+    }
+
+    function renderTitleReveal() {
+      var app = document.getElementById('app');
+      app.innerHTML = '';
+      app.className = 'fade-in';
+      var title = STATE.earnedTitle || 'ЗОЛОТОЙ МАКСИМ 💎';
+      var statsArr = Object.entries(STATE.stats).sort(function(a, b) { return b[1] - a[1]; });
+      var topStat = statsArr[0];
+      var statIcons = { beer: '🍺', overpay: '💎', family: '❤️', sugar: '🍰', gamer: '🎮' };
+      var details = getTitleDetails(title);
+      var screen = document.createElement('div');
+      screen.className = 'fullscreen-screen';
+      screen.style.gap = 'var(--space-4)';
+      screen.innerHTML =
+        '<div class="screen-title" style="font-size:var(--text-lg);">ТИТУЛ<br>РАЗБЛОКИРОВАН</div>' +
+        '<div style="font-family:var(--font-pixel);font-size:var(--text-sm);color:var(--gold);line-height:1.5;">' + title + '</div>' +
+        '<div class="coords-block" style="border-color:var(--red-primary);box-shadow:4px 4px 0 var(--red-dim);">' +
+          '<div class="coords-label">ВЕРДИКТ КОМИССИИ</div>' +
+          '<div class="coords-value" style="font-size:var(--text-sm);font-weight:400;">' + details.verdict + '</div>' +
+        '</div>' +
+        '<div class="stats-grid">' +
+          '<div class="stat-card"><span class="stat-icon">' + (statIcons[topStat[0]] || '🏆') + '</span><div class="stat-name">ГЛАВНЫЙ СТАТ</div><div class="stat-number">' + topStat[1] + '</div></div>' +
+          '<div class="stat-card"><span class="stat-icon">🏆</span><div class="stat-name">СТАТУС</div><div class="stat-number">OK</div></div>' +
+        '</div>' +
+        '<div class="screen-subtitle" style="font-size:var(--text-sm);">' + details.bonus + '</div>' +
+        '<button class="big-btn" id="coords-btn">РАСКРЫТЬ КООРДИНАТЫ ▶</button>';
+      app.appendChild(screen);
+      document.getElementById('coords-btn').addEventListener('click', function() {
+        STATE.currentMission = FINALE_MISSION;
+        saveState();
+        renderFinale();
+      });
+    }
+
     function renderFinale() {
       var app = document.getElementById('app');
       app.innerHTML = '';
       app.className = 'fade-in';
-      var title = STATE.earnedTitle || 'GOLDEN BOY 💎';
+      var title = STATE.earnedTitle || 'ЗОЛОТОЙ МАКСИМ 💎';
       var statsArr = Object.entries(STATE.stats).sort(function(a, b) { return b[1] - a[1]; });
       var topStat = statsArr[0];
       var statIcons = { beer: '🍺', overpay: '💎', family: '❤️', sugar: '🍰', gamer: '🎮' };
@@ -758,8 +823,13 @@
           '<div class="coords-label" style="color:var(--text-sub);">💌 ОТ СВЕТЫ</div>' +
           '<div class="coords-value" style="font-size:var(--text-sm);font-weight:400;line-height:1.6;">Люсик и Филька под присмотром.<br>Иди, но веди себя как человек.<br>Люблю тебя, Пивозавр. ❤️</div>' +
         '</div>' +
-        '<div class="screen-subtitle" style="font-size:var(--text-sm);color:var(--gold);">¡Tu equipo te espera, Pivozavr! 🍺</div>';
+        '<div class="screen-subtitle" style="font-size:var(--text-sm);color:var(--gold);">¡Tu equipo te espera, Pivozavr! 🍺</div>' +
+        '<button class="big-btn" id="restart-btn" style="background:var(--bg-elevated);box-shadow:3px 3px 0 var(--red-dim);font-size:var(--text-xs);">ПРОЙТИ ЗАНОВО ↻</button>';
       app.appendChild(screen);
+      document.getElementById('restart-btn').addEventListener('click', function() {
+        resetState();
+        render();
+      });
       STATE.completed = true;
       saveState();
     }
@@ -768,6 +838,7 @@
     function render() {
       var m = STATE.currentMission;
       if (m === 0) { renderPrologue(); return; }
+      if (m === TITLE_REVEAL_MISSION) { renderTitleReveal(); return; }
       if (m >= FINALE_MISSION) { renderFinale(); return; }
       renderMission(m);
     }
